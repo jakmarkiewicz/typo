@@ -12,7 +12,11 @@ Feature: Merge Articles
     | login     | password    | email             | name  | profile_id |
     | blogadmin | blogadminpw | admin@example.com | Admin | 1          |
     | bloguser  | bloguserpw  | user@example.com  | User  | 2          |
-    
+    And the following comments exist:
+    | id  | type    | author    | body     | article_id  | published_at        |
+    | 1   | Comment | bloguser  | Comment1 | 1           | 2012-10-05 05:10:05 |
+    | 2   | Comment | blogadmin | Comment2 | 3           | 2012-10-05 05:10:05 |
+
   Scenario: An admin can merge articles
     Given I am logged into the admin panel as "blogadmin"
     When I visit the edit page for "Post no.1"
@@ -48,12 +52,11 @@ Feature: Merge Articles
     Then I should be on the admin content page
     And I should see "Post no.1"
 
-  Scenario: Original comments should all carry over to the new article
-
-
-
-  #Scenario: Create blog page not shown when blog created
-  #  Given the blog is set up
-  #  When I am on the home page
-  #  Then I should not see "My Shiny Weblog!"
-  #  And I should see "Teh Blag"
+  Scenario: Original comments should all carry over to the merged article
+    Given I am logged into the admin panel as "blogadmin"
+    When I visit the edit page for "Post no.1"
+    And I fill in "merge_with" with "1"
+    And I press "Merge"
+    Then I should be on the admin content page
+    When I go to the home page 
+    And I should see "2 comments"

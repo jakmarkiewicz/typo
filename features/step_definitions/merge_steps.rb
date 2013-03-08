@@ -10,6 +10,12 @@ And /the following users exist/ do |users_table|
   end
 end
 
+And /the following comments exist/ do |comments_table|
+  comments_table.hashes.each do |comment|
+    Comment.create(comment)
+  end
+end
+
 Given /^I am logged into the admin panel as "(.*)"$/ do |login|
   visit '/accounts/login'
   fill_in 'user_login', :with => login

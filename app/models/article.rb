@@ -98,12 +98,34 @@ class Article < Content
     def merge(first_article, second_article)
       article_1 = Article.find(first_article)
       article_2 = Article.find(second_article)
+      article_1_comments = Feedback.find_all_by_article_id(first_article)
+      article_2_comments = Feedback.find_all_by_article_id(second_article)
+
       merged_article = Article.create(:title => article_1.title, 
                                       :author => article_1.author, 
-                                      :body => article_1.body + article_2.body, 
-                                      :published => true)
+                                      :body => article_1.body + article_2.body,
+                                      :user_id => article_1.user_id,
+                                      :published => true,
+                                      :allow_comments => true,
+                                      )
+
+      unless article_1_comments.blank?
+        article_1_comments.each do |comment|
+          comment.article_id = merged_article.id
+          comment.save
+        end
+      end
+
+      unless article_2_comments.blank?
+        article_2_comments.each do |comment|
+          comment.article_id = merged_article.id
+          comment.save
+        end
+      end
+
       Article.destroy(first_article)
       Article.destroy(second_article)
+      merged_article
     end
 
     def last_draft(article_id)
